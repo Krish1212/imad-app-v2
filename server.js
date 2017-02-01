@@ -50,7 +50,7 @@ function createTemplate (data) {
 			</div>
 			<hr>
 			<h3>${heading}</h3>
-			<div>Today</div>
+			<div>${date}</div>
 			<div>
 				${content}
 			</div>
