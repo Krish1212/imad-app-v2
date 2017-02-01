@@ -4,9 +4,76 @@ var path = require('path');
 
 var app = express();
 app.use(morgan('combined'));
-
+var articles = {
+	'article-one' : {
+		title : 'Article One | Modern App',
+		heading : 'Article One',
+		date : 'Yesterday',
+		content : `
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
+	},
+	'article-two' : {
+		title : 'Article Two | Modern App',
+		heading : 'Article Two',
+		date : 'Today',
+		content : `
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
+	},
+	'article-three' : {
+		title : 'Article Three | Modern App',
+		heading : 'Article Three',
+		date : 'Tomorrow',
+		content : `
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`		
+	}
+};
+function createTemplate (data) {
+	var title = data.title;
+	var heading = data.heading;
+	var date = data.date;
+	var content = data.content;
+	var htmlTemplate = `
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    <meta name="viewport" content="width=device-width initial-scale=1">
+	    <link href="/ui/style.css" rel="stylesheet" />
+		<title>${title}</title>
+	</head>
+	<body>
+		<div class="container">
+			<div>
+				<a href="/">Home</a>
+			</div>
+			<hr>
+			<h3>${heading}</h3>
+			<div>Today</div>
+			<div>
+				${content}
+			</div>
+		</div>
+	</body>
+	</html>`;
+	return htmlTemplate;
+}
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
+});
+
+app.get('/:articleName', function(req, res) {
+	var articleName = req.params.articleName;
+	res.send(createTemplate(articles[articleName]));
+});
+
+app.get('/article-two', function(req, res) {
+	res.sendFile(path.join(__dirname, 'ui', 'article-two.html'));
+});
+
+app.get('/article-three', function(req, res) {
+	res.sendFile(path.join(__dirname, 'ui', 'article-three.html'));
 });
 
 app.get('/ui/style.css', function (req, res) {
