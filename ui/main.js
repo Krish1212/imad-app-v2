@@ -1,16 +1,7 @@
 console.log('Loaded!');
-var img = document.getElementById("madi");
-var marginLeft = 0;
-var button = document.getElementById("counter");
-function moveRight(){
-	marginLeft += 5;
-	img.style.marginLeft = marginLeft + 'px';
-}
 
-img.onclick = function(){
-	var interval = setInterval(moveRight,50);
-	console.log('iam here');
-}
+var button = document.getElementById("counter");
+
 button.onclick = function(){
 	//create the request object
 	var request = new XMLHttpRequest();
