@@ -19,6 +19,9 @@ body {
 .img-medium {
     height: 200px;
 }
+.img-small {
+	height:100px;
+}
 .container{
 	max-width:900px;
 	margin: 0 auto;
