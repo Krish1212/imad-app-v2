@@ -5,41 +5,46 @@ var path = require('path');
 var app = express();
 app.use(morgan('combined'));
 var counter = 0;
+var name;
 app.get('/counter', function(req, res) {
 	counter += 1;
 	res.send(counter.toString());
 });
+app.get('/myname/:name',function(req,res){
+	name = req.params.name;
+	res.send(name.toString());
+});
 var articles = {
 	'article-one' : {
-		title : 'Article One | Modern App',
-		heading : 'Article One',
-		date : 'Yesterday',
-		content : `
+		'title' : 'Article One | Modern App',
+		'heading' : 'Article One',
+		'date' : 'Yesterday',
+		'content' : `
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
 	},
 	'article-two' : {
-		title : 'Article Two | Modern App',
-		heading : 'Article Two',
-		date : 'Today',
-		content : `
+		'title' : 'Article Two | Modern App',
+		'heading' : 'Article Two',
+		'date' : 'Today',
+		'content' : `
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
 	},
 	'article-three' : {
-		title : 'Article Three | Modern App',
-		heading : 'Article Three',
-		date : 'Tomorrow',
-		content : `
+		'title' : 'Article Three | Modern App',
+		'heading' : 'Article Three',
+		'date' : 'Tomorrow',
+		'content' : `
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
 				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`		
 	}
 };
 function createTemplate (data) {
-	var title = data.title;
-	var heading = data.heading;
-	var date = data.date;
-	var content = data.content;
+	var title = data['title'];
+	var heading = data['heading'];
+	var date = data['date'];
+	var content = data['content'];
 	var htmlTemplate = `
 	<!DOCTYPE html>
 	<html lang="en">
@@ -83,7 +88,6 @@ app.get('/ui/main.js', function (req, res) {
 app.get('/ui/madi.png', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'madi.png'));
 });
-
 
 var port = 8080; // Use 8080 for local development because you might already have apache running on 80
 app.listen(8080, function () {
