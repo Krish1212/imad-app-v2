@@ -30,32 +30,6 @@ app.get('/counter', function(req, res) {
 	res.send(counter.toString());
 });
 
-var articles = {
-	'article-one' : {
-		'title' : 'Article One | Modern App',
-		'heading' : 'Article One',
-		'date' : 'Yesterday',
-		'content' : `
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
-	},
-	'article-two' : {
-		'title' : 'Article Two | Modern App',
-		'heading' : 'Article Two',
-		'date' : 'Today',
-		'content' : `
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`
-	},
-	'article-three' : {
-		'title' : 'Article Three | Modern App',
-		'heading' : 'Article Three',
-		'date' : 'Tomorrow',
-		'content' : `
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>
-				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Mollitia temporibus voluptas aperiam, quos voluptate quidem earum ex nihil deleniti labore sapiente vitae harum possimus impedit nulla suscipit cumque, accusantium reiciendis.</p>`		
-	}
-};
 function createTemplate (data) {
 	var title = data['title'];
 	var heading = data['heading'];
@@ -88,9 +62,11 @@ function createTemplate (data) {
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
-
+//Article database connected using pool connection
+//Instead of using user parameter directly inside the query
+//we should use the sql injection method ($1) for sequirity
 app.get('/articles/:articleName', function(req, res) {
-	pool.query("SELECT * FROM article WHERE title = '" + req.params.articleName + "'", function(err,result){
+	pool.query("SELECT * FROM article WHERE title = $1", [req.params.articleName], function(err,result){
 	    if(err){
 	        res.status(500).send(err.toString());
 	    }else{
