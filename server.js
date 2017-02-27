@@ -62,6 +62,7 @@ function createTemplate (data) {
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
+
 //Article database connected using pool connection
 //Instead of using user parameter directly inside the query
 //we should use the sql injection method ($1) for sequirity
