@@ -27,7 +27,7 @@ app.get('/test-db',function(req,res){
 });
 
 function hash(input,salt){
-    var hashed = cyrpto.pbkdf2(input,salt,10000,512,'sha512');
+    var hashed = crypto.pbkdf2(input,salt,10000,512,'sha512');
     return hashed.toString('hex');
 }
 
