@@ -4,11 +4,17 @@ var path = require('path');
 var Pool = require('pg').Pool;
 var crypto = require('crypto');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 var app = express();
 app.use(morgan('combined'));
-var counter = 0;
 app.use(bodyParser.json());
+app.use(session({
+	secret:'verySecretCookieValue',
+	cookie:{maxAge: 1000 /*1 sec*/ * 60 /*1 min*/ * 60 /*1 hr*/ * 24 /*1 day*/ * 30 /*1 month*/ },
+	resave:true,
+	saveUninitialized:true
+}));
 
 var config = {
     user: 'krish1212',
@@ -30,15 +36,22 @@ app.get('/test-db',function(req,res){
 
 function hash(input,salt){
     var hashed = crypto.pbkdf2Sync(input,salt,10000,512,'sha512');
-    return hashed.toString('hex');
+    return ["pbkdf2","10000", salt, hashed.toString('hex')].join('$');
 }
 
 app.post('/create-user',function(req,res){
     //assume we've already got the username and password from the UI
     var username = req.body.username;
     var password = req.body.password;
+    if(username === ''  || password === '') {
+    	res.status(500).send("Enter the valid credentials to proceed further");
+    	return;
+    }
+    //sending the salt content along with the entered password
     var salt = crypto.randomBytes(128).toString('hex');
+    //create the hashed password
     var dbString = hash(password,salt);
+    //insert into the database
     pool.query("INSERT INTO users (username,password) VALUES ($1,$2)",[username,dbString],function(err,result){
 	    if(err){
 	        res.status(500).send(err.toString());
@@ -53,9 +66,50 @@ app.get('/hash/:input',function(req,res){
    res.send(hashedString);
 });
 
-app.get('/counter', function(req, res) {
-	counter += 1;
-	res.send(counter.toString());
+app.post('/login',function(req,res){
+    //assume we've already got the username and password from the UI
+    var username = req.body.username;
+    var password = req.body.password;
+    if(username === ''  || password === '') {
+    	res.status(500).send("Enter the valid credentials to proceed further");
+    	return;
+    }
+    pool.query("SELECT * FROM users WHERE username = $1",[username],function(err,result){
+	    if(err){
+	    	//if database connection is not found
+	        res.status(500).send(err.toString());
+	    }else if(result.rows.length === 0){
+	        res.status(403).send("Invalid credentials");
+	    } else {
+	    	//match the password
+	    	var dbString = result.rows[0].password;
+	    	var salt = dbString.split('$')[2];
+	    	var hashedPassword = hash(password,salt); //creating the hash based on the password submitted and salt
+	    	if (hashedPassword === dbString){
+	    		//set a session
+	    		req.session.auth = {userid: result.rows[0].id};
+	    		//sets a cookie with a session id
+	    		//internally in the server side, it maps the session id to an object
+	    		//{auth:{userid:}}
+	    		res.send("Valid credentials");
+	    	} else {
+	    		res.status(403).send("Invalid credentials");
+	    	}
+	    }
+    });
+});
+
+app.get('/check-login',function(req,res){
+	if(req.session && req.session.auth && req.session.auth.userid){
+		res.send("You are logged in as user id " + req.session.auth.userid);
+	}else{
+		res.send("You are not logged in");
+	}
+});
+
+app.get('/logout',function(req,res){
+	delete req.session.auth;
+	res.send("You are logged out!!");
 });
 
 function createTemplate (data) {
