@@ -3,9 +3,9 @@ console.log('Loaded!');
 var sessionvar = {};
 //HTML for articles loads after user logs in
 var articles = `
-<div id="article-list">
+<div id="article-list">This is the sample article
 </div>
-<div id="article-content">
+<div id="article-content">This is the sample article
 </div>`;
 var nartlist = document.getElementById("article-list");
 var nartcontent = document.getElementById("article-content");
@@ -83,7 +83,7 @@ function loadLoginForm(){
 }
 
 function loadLoggedIn(username){
-	document.getElementById("contents").innerHtml = `<div>Hi <strong>${username}</strong><span style="text-align:right"><a href="/logout">Logout</a></span></div>`;
+	document.getElementById("contents").innerHtml = `<div>Hi <strong>${username}</strong><span style="text-align:right;"><a href="/logout">Logout</a></span></div>`;
 }
 
 function loadLogin(){
@@ -128,3 +128,6 @@ function getArticles(){
 
 //load the login form first
 loadLogin();
+
+//load the articles section here
+getArticles();
