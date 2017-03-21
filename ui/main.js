@@ -91,7 +91,7 @@ function getArticles(){
 			if(request.status === 200){
 				console.log("Articles loaded");
 				var articleList = this.responseText;
-				if(articleList && articleList != '') {
+				if(articleList && articleList !== '') {
 					alert(articleList);
 					nartlist.innerHTML = articleList;
 				}
