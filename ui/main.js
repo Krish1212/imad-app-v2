@@ -41,6 +41,8 @@ function loadLoginForm(){
 				} else if (request.status === 500){
 					nlogin.value = "Login";
 					alert('Unknown Error handling');
+				}else{
+					request.setTimeout(function() {}, 4000);
 				}
 			}
 			//call the login function to check for user logged in
