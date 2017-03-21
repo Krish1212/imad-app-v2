@@ -87,11 +87,11 @@ nregister.onclick = function(){
 function getArticles(){
 	var request = new XMLHttpRequest();
 	request.onreadystatechange = function(){
-		if(request.readyState = XMLHttpRequest.DONE){
+		if(request.readyState === XMLHttpRequest.DONE){
 			if(request.status === 200){
 				console.log("Articles loaded");
 				var articleList = this.responseText;
-				if(articleList && !(articleList === '') ) {
+				if(articleList && articleList != '') {
 					alert(articleList);
 					nartlist.innerHTML = articleList;
 				}
