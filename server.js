@@ -124,13 +124,14 @@ app.get('/logout',function(req,res){
 	res.send("You are logged out!!");
 });
 
-app.post('/getArticles',function(req,res){
-	var userid = req.body.userid;
-	if(userid !== '' && userid === req.session.auth.userid){
-		res.status(200).send("Articles being loaded");
-	}else{
-		res.status(500).send("User not logged in");
-	}
+app.get('/getArticles',function(req,res){
+	pool.query("SELECT * FROM article WHERE user_id=$1",[req.session.auth.userid],function(err,result){
+		if(err){
+			res.status(500).send("No articles to load for this user");
+		}else{
+			res.send(JSON.stringify(result.rows));
+		}
+	})
 });
 
 

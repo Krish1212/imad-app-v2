@@ -83,7 +83,7 @@ function loadLoginForm(){
 }
 
 function loadLoggedIn(username){
-	document.getElementById("contents").innerHtml = `<div>Hi <strong>${username}</strong><span style="text-align:right;"><a href="/logout">Logout</a></span></div>`;
+	document.getElementById("contents").innerHtml = `<div>Hi <strong>${username}</strong><span style="text-align:right;"><a href="/logout">Logout</a></span></div>` + articles;
 }
 
 function loadLogin(){
@@ -108,7 +108,7 @@ function getArticles(){
 		if(request.readyState === XMLHttpRequest.DONE){
 			if(request.status === 200){
 				console.log("Articles loaded");
-				var articleList = this.responseText;
+				var articleList = JSON.parse(this.responseText);
 				if(articleList && articleList !== '') {
 					alert(articleList);
 					nartlist.innerHTML = articleList;
@@ -121,9 +121,9 @@ function getArticles(){
 		}
 	}
 	//make the request
-	request.open("POST","/getArticles",true);
+	request.open("GET","/getArticles",true);
 	request.setRequestHeader('Content-Type','application/json');
-	request.send(JSON.stringify(sessionvar));
+	request.send(null);
 }
 
 //load the login form first
