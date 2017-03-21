@@ -107,9 +107,15 @@ app.post('/login', function(req,res){
 
 app.get('/check-login',function(req,res){
 	if(req.session && req.session.auth && req.session.auth.userid){
-		res.send("You are logged in as user id " + req.session.auth.userid);
+		Pool.query("SELECT * FROM users WHERE id=$1",[req.session.auth.userid],function(err,result){
+			if(err){
+				res.status(500).send(err.toString());
+			}else{
+				res.send(result.rows[0].username);
+			}
+		});
 	}else{
-		res.send("You are not logged in");
+		res.status(400).send("You are not logged in");
 	}
 });
 
@@ -119,13 +125,12 @@ app.get('/logout',function(req,res){
 });
 
 app.post('/getArticles',function(req,res){
-	/*var userid = req.body.userid;
-	if(!(userid === '') && (userid === req.session.auth.userid)){
+	var userid = req.body.userid;
+	if(userid !== '' && userid === req.session.auth.userid){
 		res.status(200).send("Articles being loaded");
 	}else{
 		res.status(500).send("User not logged in");
-	}*/
-	res.status(200).send("Iam here");
+	}
 });
 
 
