@@ -5,6 +5,8 @@ var Pool = require('pg').Pool;
 var crypto = require('crypto');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+//todo: use passport.js for better
+//performance and security
 
 var app = express();
 app.use(morgan('combined'));
@@ -61,12 +63,14 @@ app.post('/create-user',function(req,res){
     });
 });
 
-app.get('/hash/:input',function(req,res){
+app.get('/hash/:input', function(req,res){
    var hashedString = hash(req.params.input,'my-own-string');
    res.send(hashedString);
 });
 
-app.post('/login',function(req,res){
+// passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }), 
+
+app.post('/login', function(req,res){
     //assume we've already got the username and password from the UI
     var username = req.body.username;
     var password = req.body.password;
@@ -79,19 +83,21 @@ app.post('/login',function(req,res){
 	    	//if database connection is not found
 	        res.status(500).send(err.toString());
 	    }else if(result.rows.length === 0){
-	        res.status(403).send("Invalid credentials");
+	        res.status(403);
 	    } else {
 	    	//match the password
 	    	var dbString = result.rows[0].password;
 	    	var salt = dbString.split('$')[2];
 	    	var hashedPassword = hash(password,salt); //creating the hash based on the password submitted and salt
 	    	if (hashedPassword === dbString){
+	    		//get the user id from the result
+	    		var uid = result.rows[0].id;
 	    		//set a session
-	    		req.session.auth = {userid: result.rows[0].id};
+	    		req.session.auth = {userid: uid};
 	    		//sets a cookie with a session id
 	    		//internally in the server side, it maps the session id to an object
 	    		//{auth:{userid:}}
-	    		res.send("Valid credentials");
+	    		res.status(200).send({userid:uid});
 	    	} else {
 	    		res.status(403).send("Invalid credentials");
 	    	}
@@ -112,33 +118,32 @@ app.get('/logout',function(req,res){
 	res.send("You are logged out!!");
 });
 
+app.post('/getArticles',function(req,res){
+	/*var userid = req.body.userid;
+	if(!(userid === '') && (userid === req.session.auth.userid)){
+		res.status(200).send("Articles being loaded");
+	}else{
+		res.status(500).send("User not logged in");
+	}*/
+	res.status(200).send("Iam here");
+});
+
+
 function createTemplate (data) {
 	var title = data['title'];
 	var heading = data['heading'];
 	var date = data['date'];
 	var content = data['content'];
 	var htmlTemplate = `
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-	    <meta name="viewport" content="width=device-width initial-scale=1">
-	    <link href="/ui/style.css" rel="stylesheet" />
-		<title>${title}</title>
-	</head>
-	<body>
-		<div class="container">
-			<div>
-				<a href="/">Home</a>
-			</div>
-			<hr>
-			<h3>${heading}</h3>
-			<div>${date.toDateString()}</div>
-			<div>
-				${content}
-			</div>
+		<div>
+			<a href="/">Home</a>
 		</div>
-	</body>
-	</html>`;
+		<hr>
+		<h3>${heading}</h3>
+		<div>${date.toDateString()}</div>
+		<div>
+			${content}
+		</div>`;
 	return htmlTemplate;
 }
 app.get('/', function (req, res) {
@@ -149,19 +154,22 @@ app.get('/', function (req, res) {
 //Instead of using user parameter directly inside the query
 //we should use the sql injection method ($1) for sequirity
 app.get('/articles/:articleName', function(req, res) {
-	pool.query("SELECT * FROM article WHERE title = $1", [req.params.articleName], function(err,result){
-	    if(err){
-	        res.status(500).send(err.toString());
-	    }else{
-	        if(result.rows.length === 0){
-	            res.status(404).send('Article not found');
-	        }else{
-	            var articleData = result.rows[0];
-	            res.send(createTemplate(articleData));
-	        }
-	    }
-	})
-
+	if(req.session && req.session.auth && req.session.auth.userid){
+		pool.query("SELECT * FROM article WHERE title = $1", [req.params.articleName], function(err,result){
+		    if(err){
+		        res.status(500).send(err.toString());
+		    }else{
+		        if(result.rows.length === 0){
+		            res.status(404).send('Article not found');
+		        }else{
+		            var articleData = result.rows[0];
+		            res.send(createTemplate(articleData));
+		        }
+		    }
+		});
+	}else{
+		res.status(404).send("User not logged in");
+	}
 });
 app.get('/ui/style.css', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'style.css'));
