@@ -125,3 +125,6 @@ function getArticles(){
 	request.setRequestHeader('Content-Type','application/json');
 	request.send(JSON.stringify(sessionvar));
 }
+
+//load the login form first
+loadLogin();
