@@ -107,7 +107,7 @@ app.post('/login', function(req,res){
 
 app.get('/check-login',function(req,res){
 	if(req.session && req.session.auth && req.session.auth.userid){
-		Pool.query("SELECT * FROM users WHERE id=$1",[req.session.auth.userid],function(err,result){
+		pool.query("SELECT * FROM users WHERE id=$1",[req.session.auth.userid],function(err,result){
 			if(err){
 				res.status(500).send(err.toString());
 			}else{
