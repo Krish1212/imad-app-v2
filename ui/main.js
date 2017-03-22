@@ -49,12 +49,12 @@ function loadLoginForm(){
 		//get the users inputs
 		nuser = document.getElementById("username").value;
 		npass = document.getElementById("password").value;
-		//make the request
-		request.open("POST","http://krish1212.imad.hasura-app.io/login",false);
-		request.setRequestHeader('Content-Type','application/json');
-		request.send(JSON.stringify({username:nuser,password:npass}));
 		nlogin.value = "Loggin In...";
 		nlogin.disabled = true;
+		//make the request
+		request.open("POST","http://krish1212.imad.hasura-app.io/login",true);
+		request.setRequestHeader('Content-Type','application/json');
+		request.send(JSON.stringify({username:nuser,password:npass}));
 	};
 	nregister.onclick = function(){
 		//create the request object
