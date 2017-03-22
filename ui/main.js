@@ -50,7 +50,7 @@ function loadLoginForm(){
 		nuser = document.getElementById("username").value;
 		npass = document.getElementById("password").value;
 		//make the request
-		request.open("POST","http://krish1212.imad.hasura-app.io/login",true);
+		request.open("POST","http://krish1212.imad.hasura-app.io/login",false);
 		request.setRequestHeader('Content-Type','application/json');
 		request.send(JSON.stringify({username:nuser,password:npass}));
 		nlogin.value = "Loggin In...";
